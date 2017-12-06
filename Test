@@ -1,0 +1,65 @@
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
+
+
+    public class Product
+    {
+        public string URL { get; set;}                                   /*   http://host:port*/
+    }
+    class Program
+    {
+        static HttpClient client = new HttpClient();  // creating and initialize the httpclient
+
+        //POST
+        static async Task<Uri> CreateProductAsync(Product product)
+        {
+
+            HttpResponseMessage response = await client.PostAsJsonAsync("/janus", product);
+            response.EnsureSuccessStatusCode();
+            // return URI of the created resource.
+            return response.Headers.Location;
+        }
+
+        static void Main()
+        {
+            RunAsync().GetAwaiter().GetResult();
+        }
+
+        static async Task RunAsync()
+        {
+            // Update port # in the following line.
+            client.BaseAddress = new Uri("https://192.168.2.16:8088/");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
+                // Create a new product
+                Product product = new Product{
+                    URL = "http://192.168.2.16:8088"
+                };
+
+                var url = await CreateProductAsync(product);
+                Console.WriteLine($"Created at {url}");
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Console.ReadLine();
+        }
+    }
+
+
+
+
+
+
